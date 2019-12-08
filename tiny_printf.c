@@ -269,7 +269,7 @@ int TinyPrintf(
       ++format;
       width = options = 0;
       // Default precision (at the moment only for floating point)
-      precision = 4;
+      precision = 6;
       if(*format == '\0') {
         break;
       }
