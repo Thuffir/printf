@@ -304,7 +304,7 @@ int TinyPrintf(
         }
       }
       if(*format == 's') {
-        char *s = (char *)va_arg(args, int);
+        char *s = va_arg(args, char *);
         pc += TinyPrintString(printchar, ctx, s ? s : "(null)", width, options);
         continue;
       }
@@ -355,8 +355,19 @@ int TinyPrintf(
       }
 #endif
       if(*format == 'c') {
-        printchar(ctx, (char)va_arg(args, int));
-        ++pc;
+        // This works with any byte, even with zero
+        if(width <= 1) {
+          printchar(ctx, (char)va_arg(args, int));
+          ++pc;
+        }
+        // This works with width, but not with zero byte
+        else {
+          // chars are converted to int then pushed on the stack
+          char scr[2];
+          scr[0] = (char)va_arg(args, int);
+          scr[1] = '\0';
+          pc += TinyPrintString(printchar, ctx, scr, width, options);
+        }
         continue;
       }
     }
